@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-const RIOT_API_KEY = 'RGAPI-6a2651e4-78fd-4b97-a424-8ae71447220a'; // 발급받은 API 키
+const RIOT_API_KEY = 'RGAPI-dfc9773a-35f1-47e9-bac9-c6144b97d7c0'; // 발급받은 API 키
 const gameName = 'Hide on bush'; // 닉네임
 const tagLine = 'KR1'; // 태그라인
 
 async function getSummonerInfo(gameName, tagLine) {
   try {
     // PUUID 조회
-    const accountResponse = await axios.get(`https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`, {
+    const accountResponse = await axios.get(`https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`, {
       headers: {
         'X-Riot-Token': RIOT_API_KEY
       }
@@ -32,9 +32,7 @@ async function getSummonerInfo(gameName, tagLine) {
 
 
 router.get('/', (req, res) => {
-  res.json({
-    file : "user.js"
-  });
+  getSummonerInfo(gameName, tagLine);
 });
 
 
