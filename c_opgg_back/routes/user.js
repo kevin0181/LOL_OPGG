@@ -93,6 +93,7 @@ let getMatchSummaries = async (ids, puuid) => {
         // 필요한 데이터만 가공해서 반환
         return {
           matchId,
+          championId: player.championId,
           champion: player.championName,
           level: player.champLevel,
           kda: `${player.kills}/${player.deaths}/${player.assists}`,
@@ -112,7 +113,19 @@ let getMatchSummaries = async (ids, puuid) => {
           cs: player.totalMinionsKilled,
           damage: player.totalDamageDealtToChampions,
           vision: player.visionScore,
-          duration: data.info.gameDuration
+          duration: data.info.gameDuration,
+          gameMode: data.info.gameMode,
+          queueId: data.info.queueId,
+          gameStartTimestamp: data.info.gameStartTimestamp,
+          spells: {
+            spell1Id: player.summoner1Id,
+            spell2Id: player.summoner2Id
+          },
+          runes: {
+            primaryStyle: player.perks.styles.find(style => style.description === 'primaryStyle'),
+            subStyle: player.perks.styles.find(style => style.description === 'subStyle'),
+            statPerks: player.perks.statPerks
+          }
         };
       } catch (error) {
         console.error(`Error fetching match ${matchId}:`, error.response ? error.response.data : error.message);
