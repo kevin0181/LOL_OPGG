@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const jwt = require('jsonwebtoken');
-let authenticateToken = require('./../jwtConfig');
 
 require('dotenv').config();
 
-const RIOT_API_KEY = 'RGAPI-296b2b70-f420-413a-88be-935c76d6a4a5'; // 발급받은 API 키
-const gameName = 'Hide on bush'; // 닉네임
-const tagLine = 'KR1'; // 태그라인
+const RIOT_API_KEY = 'RGAPI-90dae0a5-6768-4e1b-8a9f-9d539c4235ac'; // 발급받은 API 키
+const gameName = 'MOONIGHT'; // 닉네임
+const tagLine = '0181'; // 태그라인
 
 async function getSummonerInfo(gameName, tagLine) {
   try {
@@ -118,15 +116,12 @@ let getMatchSummary = async (ids) => {
 
 
 router.get('/', async (req, res) => {
-
   let userInfo = await getSummonerInfo(gameName, tagLine);
-  userInfo.jwt_puuid = generateToken(userInfo.puuid);
 
   res.json(userInfo);
-
 });
 
-router.get('/rank', authenticateToken, async (req, res) => {
+router.get('/rank', async (req, res) => {
   res.json(await getUserRank(req.user.puuid));
 });
 
