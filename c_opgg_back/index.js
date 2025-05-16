@@ -1,9 +1,13 @@
 // index.js
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
-const port = 3000;
+const port = 8080;
 
 const userRouter = require('./routes/user');
+
+app.use(cors());
 
 // JSON 파싱 미들웨어
 app.use(express.json());

@@ -5,8 +5,6 @@ const axios = require('axios');
 require('dotenv').config();
 
 const RIOT_API_KEY = 'RGAPI-29de756a-5cc9-4e1f-a56f-70a89ed530dc'; // 발급받은 API 키
-const gameName = 'Hide on bush'; // 닉네임
-const tagLine = 'KR1'; // 태그라인
 
 // 호출 간 딜레이를 위한 헬퍼 (라이엇 호출 제한 피하기 위해)
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -187,7 +185,7 @@ let getMatchSummaries = async (ids, puuid) => {
               }))
           }
         };
-        
+
       } catch (error) {
         console.error(`Error fetching match ${matchId}:`, error.response ? error.response.data : error.message);
         return null;
@@ -205,21 +203,23 @@ let getMatchSummaries = async (ids, puuid) => {
 
 
 router.get('/', async (req, res) => {
-  let userInfo = await getSummonerInfo(gameName, tagLine);
+  const { region, name, tag } = req.query;
+  let userInfo = await getSummonerInfo(name, tag);
 
   res.json(userInfo);
 });
 
 router.get('/rank', async (req, res) => {
-  let userInfo = await getSummonerInfo(gameName, tagLine);
+  const { region, name, tag } = req.query;
+  let userInfo = await getSummonerInfo(name, tag);
   res.json(await getUserRank(userInfo.puuid));
 });
 
 router.get('/matches', async (req, res) => {
-  const userInfo = await getSummonerInfo(gameName, tagLine);
+  const { region, name, tag } = req.query;
+  const userInfo = await getSummonerInfo(name, tag);
   const ids = await getMatchIds(userInfo.puuid, 0, 20);
   const summaries = await getMatchSummaries(ids, userInfo.puuid);
-
 
   res.json(summaries);
 });
