@@ -1,4 +1,50 @@
-import React from 'react';
+const spellIdToName = {
+    1: 'SummonerBoost',
+    3: 'SummonerExhaust',
+    4: 'SummonerFlash',
+    6: 'SummonerHaste',
+    7: 'SummonerHeal',
+    11: 'SummonerSmite',
+    12: 'SummonerTeleport',
+    14: 'SummonerIgnite',
+    21: 'SummonerBarrier',
+    32: 'SummonerSnowball',
+    39: 'SummonerMark'
+};
+
+const getSpellImg = (spellId) => {
+    const spellName = spellIdToName[spellId];
+    if (!spellName) return null;
+    return `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/spell/${spellName}.png`;
+};
+
+const getItemImg = (itemId) => {
+    if (!itemId || itemId === 0) return null;
+    return `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/item/${itemId}.png`;
+};
+
+const renderPlayer = (p) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #eee', padding: '5px 0' }}>
+        <img src={`https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/${p.champion}.png`} alt={p.champion} width="32" />
+        <div>
+            <div>{p.champion} - {p.name} ({p.position})</div>
+            <div>KDA: {p.kda} | CS: {p.cs} | DMG: {p.damage} | Vision: {p.vision}</div>
+            <div>
+                스펠:&nbsp;
+                {p.spells?.spell1Id && <img src={getSpellImg(p.spells.spell1Id)} alt="spell1" width="24" />}
+                {p.spells?.spell2Id && <img src={getSpellImg(p.spells.spell2Id)} alt="spell2" width="24" />}
+            </div>
+            <div>
+                아이템:&nbsp;
+                {Array.isArray(p.items) && p.items.map((itemId, idx) =>
+                    itemId !== 0 ? (
+                        <img key={idx} src={getItemImg(itemId)} alt={`item${itemId}`} width="24" />
+                    ) : null
+                )}
+            </div>
+        </div>
+    </div>
+);
 
 const MatchDetail = ({ match }) => {
 
@@ -23,13 +69,33 @@ const MatchDetail = ({ match }) => {
             </div>
 
             {/* 내 정보 */}
-            <div style={{ background: match.win ? '#d0f0c0' : '#f8d7da', padding: '10px', marginBottom: '20px' }}>
-                <strong>{match.name}#{match.tag}</strong> ({match.position})
-                <div>챔피언: {match.champion} (Lv {match.level})</div>
-                <div>KDA: {match.kda}</div>
-                <div>CS: {match.cs} / Damage: {match.damage} / Vision: {match.vision}</div>
-                <div>스펠: {match.spells?.spell1Id ?? 'N/A'}, {match.spells?.spell2Id ?? 'N/A'}</div>
-                <div>아이템: {Array.isArray(match.items) ? match.items.join(', ') : 'N/A'}</div>
+            <div style={{ background: match.win ? '#d0f0c0' : '#f8d7da', padding: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <img
+                    src={`https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/${match.champion}.png`}
+                    alt={match.champion}
+                    width="64"
+                    height="64"
+                    onError={(e) => e.target.style.display = 'none'}
+                />
+                <div>
+                    <strong>{match.name}#{match.tag}</strong> ({match.position})
+                    <div>챔피언: {match.champion} (Lv {match.level})</div>
+                    <div>KDA: {match.kda}</div>
+                    <div>CS: {match.cs} / Damage: {match.damage} / Vision: {match.vision}</div>
+                    <div>
+                        스펠:&nbsp;
+                        {match.spells?.spell1Id && <img src={getSpellImg(match.spells.spell1Id)} alt="spell1" width="32" />}
+                        {match.spells?.spell2Id && <img src={getSpellImg(match.spells.spell2Id)} alt="spell2" width="32" />}
+                    </div>
+                    <div>
+                        아이템:&nbsp;
+                        {Array.isArray(match.items) && match.items.map((itemId, idx) =>
+                            itemId !== 0 ? (
+                                <img key={idx} src={getItemImg(itemId)} alt={`item${itemId}`} width="32" />
+                            ) : null
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* 팀 정보 */}
@@ -37,23 +103,13 @@ const MatchDetail = ({ match }) => {
                 <div style={{ flex: 1 }}>
                     <h4>아군 팀</h4>
                     {Array.isArray(match.teams?.ally) ? match.teams.ally.map((p, idx) => (
-                        <div key={idx} style={{ padding: '5px 0', borderBottom: '1px solid #eee' }}>
-                            {p.champion} - {p.name} ({p.position})<br />
-                            KDA: {p.kda} | CS: {p.cs} | DMG: {p.damage} | Vision: {p.vision}<br />
-                            스펠: {p.spells?.spell1Id ?? 'N/A'}, {p.spells?.spell2Id ?? 'N/A'}<br />
-                            아이템: {Array.isArray(p.items) ? p.items.join(', ') : 'N/A'}
-                        </div>
+                        <div key={idx}>{renderPlayer(p)}</div>
                     )) : <p>없음</p>}
                 </div>
                 <div style={{ flex: 1 }}>
                     <h4>적군 팀</h4>
                     {Array.isArray(match.teams?.enemy) ? match.teams.enemy.map((p, idx) => (
-                        <div key={idx} style={{ padding: '5px 0', borderBottom: '1px solid #eee' }}>
-                            {p.champion} - {p.name} ({p.position})<br />
-                            KDA: {p.kda} | CS: {p.cs} | DMG: {p.damage} | Vision: {p.vision}<br />
-                            스펠: {p.spells?.spell1Id ?? 'N/A'}, {p.spells?.spell2Id ?? 'N/A'}<br />
-                            아이템: {Array.isArray(p.items) ? p.items.join(', ') : 'N/A'}
-                        </div>
+                        <div key={idx}>{renderPlayer(p)}</div>
                     )) : <p>없음</p>}
                 </div>
             </div>
