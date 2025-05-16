@@ -2,6 +2,8 @@ import React from 'react';
 
 const MatchDetail = ({ match }) => {
 
+    console.log('match:', match);
+
     if (!match || Object.keys(match).length === 0) {
         console.log('match가 아직 비어있음');
         return <div>로딩중...</div>;

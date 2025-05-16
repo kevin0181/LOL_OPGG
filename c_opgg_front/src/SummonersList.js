@@ -16,8 +16,8 @@ let SummonersList = () => {
                 tag: tag
             }
         }).then(res => {
-            console.log(res.data);
-            setMatches([res.data]);
+            //console.log(res.data);
+            setMatches(res.data);
         }).catch(err => {
             console.error('매치 리스트 불러오기 실패:', err);
         });
