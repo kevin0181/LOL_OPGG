@@ -4,7 +4,7 @@ const axios = require('axios');
 
 require('dotenv').config();
 
-const RIOT_API_KEY = 'RGAPI-7c63bf8e-605b-49b7-92c0-49e8a4a0b5d3'; // 발급받은 API 키
+const RIOT_API_KEY = 'RGAPI-29de756a-5cc9-4e1f-a56f-70a89ed530dc'; // 발급받은 API 키
 const gameName = 'Hide on bush'; // 닉네임
 const tagLine = 'KR1'; // 태그라인
 
@@ -125,8 +125,69 @@ let getMatchSummaries = async (ids, puuid) => {
             primaryStyle: player.perks.styles.find(style => style.description === 'primaryStyle'),
             subStyle: player.perks.styles.find(style => style.description === 'subStyle'),
             statPerks: player.perks.statPerks
+          },
+          teams: {
+            ally: data.info.participants
+              .filter(p => p.teamId === player.teamId)
+              .map(p => ({
+                name: p.riotIdGameName || p.summonerName,
+                champion: p.championName,
+                items: [
+                  p.item0,
+                  p.item1,
+                  p.item2,
+                  p.item3,
+                  p.item4,
+                  p.item5,
+                  p.item6
+                ],
+                spells: {
+                  spell1Id: p.summoner1Id,
+                  spell2Id: p.summoner2Id
+                },
+                runes: {
+                  primaryStyle: p.perks.styles.find(style => style.description === 'primaryStyle'),
+                  subStyle: p.perks.styles.find(style => style.description === 'subStyle'),
+                  statPerks: p.perks.statPerks
+                },
+                kda: `${p.kills}/${p.deaths}/${p.assists}`,
+                cs: p.totalMinionsKilled,
+                damage: p.totalDamageDealtToChampions,
+                vision: p.visionScore,
+                position: p.individualPosition
+              })),
+            enemy: data.info.participants
+              .filter(p => p.teamId !== player.teamId)
+              .map(p => ({
+                name: p.riotIdGameName || p.summonerName,
+                champion: p.championName,
+                items: [
+                  p.item0,
+                  p.item1,
+                  p.item2,
+                  p.item3,
+                  p.item4,
+                  p.item5,
+                  p.item6
+                ],
+                spells: {
+                  spell1Id: p.summoner1Id,
+                  spell2Id: p.summoner2Id
+                },
+                runes: {
+                  primaryStyle: p.perks.styles.find(style => style.description === 'primaryStyle'),
+                  subStyle: p.perks.styles.find(style => style.description === 'subStyle'),
+                  statPerks: p.perks.statPerks
+                },
+                kda: `${p.kills}/${p.deaths}/${p.assists}`,
+                cs: p.totalMinionsKilled,
+                damage: p.totalDamageDealtToChampions,
+                vision: p.visionScore,
+                position: p.individualPosition
+              }))
           }
         };
+        
       } catch (error) {
         console.error(`Error fetching match ${matchId}:`, error.response ? error.response.data : error.message);
         return null;
