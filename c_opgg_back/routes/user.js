@@ -6,7 +6,7 @@ let authenticateToken = require('./../jwtConfig');
 
 require('dotenv').config();
 
-const RIOT_API_KEY = 'RGAPI-296b2b70-f420-413a-88be-935c76d6a4a5'; // 발급받은 API 키
+const RIOT_API_KEY = 'RGAPI-90dae0a5-6768-4e1b-8a9f-9d539c4235ac'; // 발급받은 API 키
 const gameName = 'Hide on bush'; // 닉네임
 const tagLine = 'KR1'; // 태그라인
 
