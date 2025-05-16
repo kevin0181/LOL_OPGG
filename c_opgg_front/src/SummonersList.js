@@ -1,9 +1,11 @@
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import MatchDetail from './MatchDetail';
 
 let SummonersList = () => {
     const { region, name, tag } = useParams();
+    const [matches, setMatches] = useState([]);
 
     let getMatchList = async () => {
 
@@ -15,6 +17,7 @@ let SummonersList = () => {
             }
         }).then(res => {
             console.log(res.data);
+            setMatches([res.data]);
         }).catch(err => {
             console.error('매치 리스트 불러오기 실패:', err);
         });
@@ -25,10 +28,16 @@ let SummonersList = () => {
     }, [region, name, tag]);
 
     return (
-        <>
-            <div>SummonersList</div>
-            <div>{region},{name},{tag}</div>
-        </>
+        <div>
+            <h2>{name}#{tag} 전적</h2>
+            {matches.length > 0 ? (
+                matches.map((match, idx) => (
+                    <MatchDetail key={idx} match={match} />
+                ))
+            ) : (
+                <p>전적을 불러오는 중...</p>
+            )}
+        </div>
     )
 }
 
