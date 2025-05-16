@@ -1,0 +1,124 @@
+.match-summary {
+    display: flex;
+    align-items: center;
+    background: #e1f0ff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    position: relative;
+    gap: 12px;
+}
+
+.match-summary.win {
+    background: #d8ecff;
+}
+
+.match-summary.lose {
+    background: #ffe6e6;
+}
+
+.champion-wrap {
+    position: relative;
+}
+
+.champion-icon {
+    border-radius: 4px;
+    border: 1px solid #333;
+    width: 48px;
+    height: 48px;
+}
+
+.champion-level {
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    background: #333;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 5px;
+    border-radius: 6px;
+}
+
+.summary-content {
+    flex-grow: 1;
+}
+
+.champion-name {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.spells-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.spell-icon {
+    border-radius: 4px;
+    border: 1px solid #333;
+}
+
+.team-details {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+.team-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.team-table th,
+.team-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    text-align: left;
+}
+
+.team-table th {
+    background: #f7f7f7;
+}
+
+.item-list img {
+    margin-right: 2px;
+}
+
+.damage-bg {
+    width: 100px;
+    background: #eee;
+    border-radius: 4px;
+    height: 8px;
+    position: relative;
+    margin-left: 5px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.damage-bar {
+    height: 100%;
+    background: #ff4d4f;
+    border-radius: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+.champion-cell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.highlight-player {
+    background-color: #ffe8a1;
+}

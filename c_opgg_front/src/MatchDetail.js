@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import './MatchDetail.css';
+
 const spellIdToName = {
     1: 'SummonerBoost',
     3: 'SummonerExhaust',
@@ -6,113 +9,124 @@ const spellIdToName = {
     7: 'SummonerHeal',
     11: 'SummonerSmite',
     12: 'SummonerTeleport',
-    14: 'SummonerIgnite',
+    13: 'SummonerMana',
+    14: 'SummonerDot',
     21: 'SummonerBarrier',
+    30: 'SummonerPoroRecall',
+    31: 'SummonerPoroThrow',
     32: 'SummonerSnowball',
-    39: 'SummonerMark'
+    39: 'SummonerMark',
+    54: 'Summoner_UltBookPlaceholder',
+    55: 'Summoner_UltBookSmitePlaceholder'
 };
 
-const getSpellImg = (spellId) => {
-    const spellName = spellIdToName[spellId];
-    if (!spellName) return null;
-    return `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/spell/${spellName}.png`;
+const getSpellImg = (id) => {
+    const name = spellIdToName[id];
+    return name ? `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/spell/${name}.png` : '';
 };
 
-const getItemImg = (itemId) => {
-    if (!itemId || itemId === 0) return null;
-    return `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/item/${itemId}.png`;
-};
+const getItemImg = (id) => `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/item/${id}.png`;
+const getChampImg = (name) => `https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/${name}.png`;
 
-const renderPlayer = (p) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #eee', padding: '5px 0' }}>
-        <img src={`https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/${p.champion}.png`} alt={p.champion} width="32" />
-        <div>
-            <div>{p.champion} - {p.name} ({p.position})</div>
-            <div>KDA: {p.kda} | CS: {p.cs} | DMG: {p.damage} | Vision: {p.vision}</div>
-            <div>
-                스펠:&nbsp;
-                {p.spells?.spell1Id && <img src={getSpellImg(p.spells.spell1Id)} alt="spell1" width="24" />}
-                {p.spells?.spell2Id && <img src={getSpellImg(p.spells.spell2Id)} alt="spell2" width="24" />}
-            </div>
-            <div>
-                아이템:&nbsp;
-                {Array.isArray(p.items) && p.items.map((itemId, idx) =>
-                    itemId !== 0 ? (
-                        <img key={idx} src={getItemImg(itemId)} alt={`item${itemId}`} width="24" />
-                    ) : null
-                )}
-            </div>
-        </div>
-    </div>
-);
+const getQueueName = (queueId) => {
+    switch (queueId) {
+        case 420: return '솔로랭크';
+        case 430: return '일반';
+        case 440: return '자유랭크';
+        case 450: return '칼바람 나락';
+        case 1700: return '아레나';
+        default: return '기타';
+    }
+};
 
 const MatchDetail = ({ match }) => {
+    const [showDetail, setShowDetail] = useState(false);
 
-    console.log('match:', match);
-
-    if (!match || Object.keys(match).length === 0) {
-        console.log('match가 아직 비어있음');
-        return <div>로딩중...</div>;
-    }
+    if (!match || !match.champion) return null;
 
     const formatTime = (timestamp) => {
         const date = new Date(timestamp);
         return date.toLocaleString();
     };
 
+    const renderTeamTable = (team) => {
+        const maxDamage = Math.max(...team.map(p => p.damage));
+        return (
+            <table className="team-table">
+                <thead>
+                    <tr>
+                        <th>소환사</th>
+                        <th>챔피언</th>
+                        <th>스펠</th>
+                        <th>KDA</th>
+                        <th>피해량</th>
+                        <th>와드</th>
+                        <th>CS</th>
+                        <th>아이템</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {team.map((p, idx) => (
+                        <tr key={idx} className={p.name === match.name ? 'highlight-player' : ''}>
+                            <td>{p.name}</td>
+                            <td>
+                                <div className="champion-cell">
+                                    <img src={getChampImg(p.champion)} alt={p.champion} className="champion-icon" />
+                                    <span>{p.champion}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {p.spells?.spell1Id && <img src={getSpellImg(p.spells.spell1Id)} alt="spell1" width="20" />}
+                                {p.spells?.spell2Id && <img src={getSpellImg(p.spells.spell2Id)} alt="spell2" width="20" />}
+                            </td>
+                            <td>{p.kda}</td>
+                            <td>
+                                {p.damage}
+                                <div className="damage-bg">
+                                    <div className="damage-bar" style={{ width: `${(p.damage / maxDamage) * 100}%` }}></div>
+                                </div>
+                            </td>
+                            <td>{p.vision}</td>
+                            <td>{p.cs}</td>
+                            <td className="item-list">
+                                {p.items.map((item, idx) => item !== 0 && (
+                                    <img key={idx} src={getItemImg(item)} alt={`item${item}`} width="24" className="item-icon" />
+                                ))}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
+
     return (
-        <div style={{ border: '1px solid #ddd', padding: '15px', marginBottom: '20px', fontFamily: 'Arial' }}>
-            {/* 매치 기본 정보 */}
-            <div style={{ marginBottom: '10px' }}>
-                <strong>{match.gameMode}</strong> | 큐 ID: {match.queueId} | {formatTime(match.gameStartTimestamp)}
-                <div>Duration: {Math.floor(match.duration / 60)}분</div>
-            </div>
-
-            {/* 내 정보 */}
-            <div style={{ background: match.win ? '#d0f0c0' : '#f8d7da', padding: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <img
-                    src={`https://ddragon.leagueoflegends.com/cdn/15.8.1/img/champion/${match.champion}.png`}
-                    alt={match.champion}
-                    width="64"
-                    height="64"
-                    onError={(e) => e.target.style.display = 'none'}
-                />
-                <div>
-                    <strong>{match.name}#{match.tag}</strong> ({match.position})
-                    <div>챔피언: {match.champion} (Lv {match.level})</div>
-                    <div>KDA: {match.kda}</div>
-                    <div>CS: {match.cs} / Damage: {match.damage} / Vision: {match.vision}</div>
-                    <div>
-                        스펠:&nbsp;
-                        {match.spells?.spell1Id && <img src={getSpellImg(match.spells.spell1Id)} alt="spell1" width="32" />}
-                        {match.spells?.spell2Id && <img src={getSpellImg(match.spells.spell2Id)} alt="spell2" width="32" />}
-                    </div>
-                    <div>
-                        아이템:&nbsp;
-                        {Array.isArray(match.items) && match.items.map((itemId, idx) =>
-                            itemId !== 0 ? (
-                                <img key={idx} src={getItemImg(itemId)} alt={`item${itemId}`} width="32" />
-                            ) : null
-                        )}
-                    </div>
+        <div>
+            <div className={`match-summary ${match.win ? 'win' : 'lose'}`} onClick={() => setShowDetail(!showDetail)}>
+                <div className="champion-wrap">
+                    <img src={getChampImg(match.champion)} alt={match.champion} width="48" className="champion-icon" />
+                    <div className="champion-level">{match.level}</div>
+                </div>
+                <div className="summary-content">
+                    <div className="champion-name">{match.champion} <span>{match.kda}</span></div>
+                    <div>{match.name}#{match.tag}</div>
+                    <div>CS: {match.cs} / 피해량: {match.damage}</div>
+                </div>
+                <div className="spells-box">
+                    {match.spells?.spell1Id && <img src={getSpellImg(match.spells.spell1Id)} alt="spell1" width="24" className="spell-icon" />}
+                    {match.spells?.spell2Id && <img src={getSpellImg(match.spells.spell2Id)} alt="spell2" width="24" className="spell-icon" />}
                 </div>
             </div>
 
-            {/* 팀 정보 */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
-                <div style={{ flex: 1 }}>
+            {showDetail && (
+                <div className="team-details">
+                    <div>게임 모드: {getQueueName(match.queueId)} | {formatTime(match.gameStartTimestamp)}</div>
                     <h4>아군 팀</h4>
-                    {Array.isArray(match.teams?.ally) ? match.teams.ally.map((p, idx) => (
-                        <div key={idx}>{renderPlayer(p)}</div>
-                    )) : <p>없음</p>}
-                </div>
-                <div style={{ flex: 1 }}>
+                    {renderTeamTable(match.teams.ally)}
                     <h4>적군 팀</h4>
-                    {Array.isArray(match.teams?.enemy) ? match.teams.enemy.map((p, idx) => (
-                        <div key={idx}>{renderPlayer(p)}</div>
-                    )) : <p>없음</p>}
+                    {renderTeamTable(match.teams.enemy)}
                 </div>
-            </div>
+            )}
         </div>
     );
 };
